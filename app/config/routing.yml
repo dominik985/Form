@@ -1,0 +1,6 @@
+form:
+    resource: "@FormBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+
