@@ -1,37 +1,29 @@
 <?php
 
-namespace FormBundle\Controller;
+namespace FormBundle\Form;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
-use Symfony\Component\Form\Extension\Core\Type\CountryType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints as Assert;
 
-
-///**
-// * @Route("/form")
-// */
-class FormController extends Controller
+class SurveyType extends AbstractType
 {
-    
     /**
-     * @Route("/")
-     * 
-     * @Template
+     * {@inheritdoc}
      */
-    public function displayAction()
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
-       
-        $form = $this->createFormBuilder()
-                ->add('name', TextType::class, array(
+        $builder->add('name', TextType::class, array(
                     'label' => 'Imię i nazwisko'
                 ))
                 ->add('email', EmailType::class, array(
@@ -64,7 +56,9 @@ class FormController extends Controller
                         'Analiza fundamentalna' => 'af',
                         'Kurs zaawansowany' => 'master'
                     ),
-                    'choices_as_values' => true
+                    'choices_as_values' => true,
+                    'placeholder' => '--',
+                    'empty_data' => NULL
                 ))
                 ->add('invest', ChoiceType::class, array(
                     'label' => 'Inwestycje',
@@ -80,23 +74,35 @@ class FormController extends Controller
                 ))
                 ->add('comments', TextareaType::class, array(
                     'label' => 'Dodatkowy komentarz'
-                ))
-                ->add('payment_file', FileType::class, array(
-                    'label' => 'Potwierdzenie zapłaty'
-                ))
+                )) 
                 ->add('rules', CheckboxType::class, array(
-                    'label' => 'Akceptuje regulamin'
-                ))
+                    'label' => 'Akceptuje regulamin',
+                    'mapped' => false,
+                    'constraints' => array(
+                        new Assert\NotBlank()
+                )))
                 ->add('save', SubmitType::class, array(
-                    'label' => 'Zapisz'
-                ))
-                ->getForm();
-        
-        
-//        return $this->render('FormBundle:Form:display.html.twig');
-        
-        return array(
-            'form' => $form->createView()
-        );
+                      'label' => 'Zapisz'
+                ));
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => 'FormBundle\Entity\Survey'
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
+    {
+        return 'formbundle_survey';
+    }
+
+
 }

@@ -1,0 +1,22 @@
+{% extends 'FormBundle::base.html.twig' %}
+
+{#{% form_theme form 'FormBundle:Forms:form_theme.html.twig' %}#}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+       <div class="col-md-1"></div>
+            <div class="col-md-9">
+                <h3 class="text-center">Wypełnij formularz</h3><hr>
+                    {% if formData is not null %}
+                        <pre>{{ dump(formData) }}</pre>
+                    {% endif %}
+                    {{ form(form, {'attr': {'novalidate': 'true'}}) }}
+                <br>
+            </div>
+        <div class="col-md-2"></div>
+    <div>
+</div><!-- /.container -->
+
+{% endblock %}
